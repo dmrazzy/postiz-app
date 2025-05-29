@@ -16,11 +16,13 @@ import { useToaster } from '@gitroom/react/toaster/toaster';
 const allowedIntegrations = [
   'facebook',
   'instagram',
+  'instagram-standalone',
   'linkedin-page',
   // 'tiktok',
   'youtube',
   'pinterest',
   'threads',
+  'x',
 ];
 
 export const PlatformAnalytics = () => {
@@ -60,10 +62,12 @@ export const PlatformAnalytics = () => {
       [
         'facebook',
         'instagram',
+        'instagram-standalone',
         'linkedin-page',
         'pinterest',
         'youtube',
         'threads',
+        'x',
       ].indexOf(currentIntegration.identifier) !== -1
     ) {
       arr.push({
@@ -76,10 +80,12 @@ export const PlatformAnalytics = () => {
       [
         'facebook',
         'instagram',
+        'instagram-standalone',
         'linkedin-page',
         'pinterest',
         'youtube',
         'threads',
+        'x',
       ].indexOf(currentIntegration.identifier) !== -1
     ) {
       arr.push({
@@ -89,7 +95,7 @@ export const PlatformAnalytics = () => {
     }
 
     if (
-      ['facebook', 'linkedin-page', 'pinterest', 'youtube'].indexOf(
+      ['facebook', 'linkedin-page', 'pinterest', 'youtube', 'x'].indexOf(
         currentIntegration.identifier
       ) !== -1
     ) {
