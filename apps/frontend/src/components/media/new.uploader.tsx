@@ -11,6 +11,7 @@ import '@uppy/core/dist/style.min.css';
 import '@uppy/dashboard/dist/style.min.css';
 import { useVariables } from '@gitroom/react/helpers/variable.context';
 import Compressor from '@uppy/compressor';
+import { useT } from '@gitroom/react/translation/get.transation.service.client';
 
 export function MultipartFileUploader({
   onUploadSuccess,
@@ -24,7 +25,6 @@ export function MultipartFileUploader({
 }) {
   const [loaded, setLoaded] = useState(false);
   const [reload, setReload] = useState(false);
-
   const onUploadSuccessExtended = useCallback(
     (result: UploadResult<any, any>) => {
       setReload(true);
@@ -32,7 +32,6 @@ export function MultipartFileUploader({
     },
     [onUploadSuccess]
   );
-
   useEffect(() => {
     if (reload) {
       setTimeout(() => {
@@ -40,15 +39,12 @@ export function MultipartFileUploader({
       }, 1);
     }
   }, [reload]);
-
   useEffect(() => {
     setLoaded(true);
   }, []);
-
   if (!loaded || reload) {
     return null;
   }
-
   return (
     <MultipartFileUploaderAfter
       uppRef={uppRef || {}}
@@ -57,16 +53,15 @@ export function MultipartFileUploader({
     />
   );
 }
-
 export function useUppyUploader(props: {
   // @ts-ignore
   onUploadSuccess: (result: UploadResult) => void;
   allowedFileTypes: string;
 }) {
-  const { storageProvider, backendUrl } = useVariables();
+  const { storageProvider, backendUrl, disableImageCompression } =
+    useVariables();
   const { onUploadSuccess, allowedFileTypes } = props;
   const fetch = useFetch();
-
   return useMemo(() => {
     const uppy2 = new Uppy({
       autoProceed: true,
@@ -76,19 +71,20 @@ export function useUppyUploader(props: {
         maxFileSize: 1000000000,
       },
     });
-
     const { plugin, options } = getUppyUploadPlugin(
       storageProvider,
       fetch,
       backendUrl
     );
     uppy2.use(plugin, options);
-    uppy2.use(Compressor, {
-      convertTypes: ['image/jpeg'],
-      maxWidth: 1000,
-      maxHeight: 1000,
-      quality: 1,
-    });
+    if (!disableImageCompression) {
+      uppy2.use(Compressor, {
+        convertTypes: ['image/jpeg'],
+        maxWidth: 1000,
+        maxHeight: 1000,
+        quality: 1,
+      });
+    }
     // Set additional metadata when a file is added
     uppy2.on('file-added', (file) => {
       uppy2.setFileMeta(file.id, {
@@ -96,11 +92,9 @@ export function useUppyUploader(props: {
         // Add more fields as needed
       });
     });
-
     uppy2.on('complete', (result) => {
       onUploadSuccess(result);
     });
-
     uppy2.on('upload-success', (file, response) => {
       // @ts-ignore
       uppy2.setFileState(file.id, {
@@ -112,11 +106,9 @@ export function useUppyUploader(props: {
         isPaused: false,
       });
     });
-
     return uppy2;
   }, []);
 }
-
 export function MultipartFileUploaderAfter({
   onUploadSuccess,
   allowedFileTypes,
@@ -127,12 +119,15 @@ export function MultipartFileUploaderAfter({
   allowedFileTypes: string;
   uppRef: any;
 }) {
-  const uppy = useUppyUploader({ onUploadSuccess, allowedFileTypes });
+  const t = useT();
+  const uppy = useUppyUploader({
+    onUploadSuccess,
+    allowedFileTypes,
+  });
   const uppyInstance = useMemo(() => {
     uppRef.current = uppy;
     return uppy;
   }, []);
-
   return (
     <>
       {/* <Dashboard uppy={uppy} /> */}
@@ -143,7 +138,7 @@ export function MultipartFileUploaderAfter({
         uppy={uppyInstance}
         locale={{
           strings: {
-            chooseFiles: 'Upload',
+            chooseFiles: t('upload', 'Upload'),
           },
           // @ts-ignore
           pluralize: (n: any) => n,
