@@ -6,28 +6,30 @@ import clsx from 'clsx';
 import { usePathname } from 'next/navigation';
 import { useUser } from '@gitroom/frontend/components/layout/user.context';
 import { useVariables } from '@gitroom/react/helpers/variable.context';
-
+import { useT } from '@gitroom/react/translation/get.transation.service.client';
 export const useMenuItems = () => {
   const { isGeneral } = useVariables();
+  const t = useT();
+
   return [
     ...(!isGeneral
       ? [
           {
-            name: 'Analytics',
+            name: t('analytics', 'Analytics'),
             icon: 'analytics',
             path: '/analytics',
           },
         ]
       : []),
     {
-      name: isGeneral ? 'Calendar' : 'Launches',
+      name: isGeneral ? t('calendar', 'Calendar') : t('launches', 'Launches'),
       icon: 'launches',
       path: '/launches',
     },
     ...(isGeneral
       ? [
           {
-            name: 'Analytics',
+            name: t('analytics', 'Analytics'),
             icon: 'analytics',
             path: '/analytics',
           },
@@ -36,7 +38,7 @@ export const useMenuItems = () => {
     ...(!isGeneral
       ? [
           {
-            name: 'Settings',
+            name: t('settings', 'Settings'),
             icon: 'settings',
             path: '/settings',
             role: ['ADMIN', 'SUPERADMIN'],
@@ -44,26 +46,31 @@ export const useMenuItems = () => {
         ]
       : []),
     {
-      name: 'Plugs',
+      name: t('plugs', 'Plugs'),
       icon: 'plugs',
       path: '/plugs',
     },
     {
-      name: 'Billing',
+      name: t('integrations', 'Integrations'),
+      icon: 'integrations',
+      path: '/third-party',
+    },
+    {
+      name: t('billing', 'Billing'),
       icon: 'billing',
       path: '/billing',
       role: ['ADMIN', 'SUPERADMIN'],
       requireBilling: true,
     },
     {
-      name: 'Settings',
+      name: t('settings', 'Settings'),
       icon: 'settings',
       path: '/settings',
       role: ['ADMIN', 'SUPERADMIN'],
       hide: true,
     },
     {
-      name: 'Affiliate',
+      name: t('affiliate', 'Affiliate'),
       icon: 'affiliate',
       path: 'https://affiliate.postiz.com',
       role: ['ADMIN', 'SUPERADMIN', 'USER'],
@@ -71,7 +78,6 @@ export const useMenuItems = () => {
     },
   ];
 };
-
 export const TopMenu: FC = () => {
   const path = usePathname();
   const user = useUser();
@@ -79,7 +85,7 @@ export const TopMenu: FC = () => {
   const menuItems = useMenuItems();
   return (
     <div className="flex flex-col h-full animate-normalFadeDown order-3 md:order-2 col-span-2 md:col-span-1">
-      <ul className="gap-0 md:gap-5 flex flex-1 items-center text-[18px]">
+      <ul className="gap-0 md:gap-1 flex flex-1 items-center text-[18px]">
         {menuItems
           .filter((f) => {
             if (f.hide) {
